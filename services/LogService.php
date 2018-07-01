@@ -8,7 +8,7 @@ use yii\helpers\VarDumper;
 
 class LogService
 {
-    public function create(LogForm $form): void
+    public function create(LogForm $form)
     {
         $log = Log::create($form);
         $log->save();
