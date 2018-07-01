@@ -1,0 +1,13 @@
+.skin-blue .main-header .navbar,.skin-blue .main-header li.user-header{
+    background-color: #519274!important;
+}
+.skin-blue .main-header .logo{
+    background-color: #22774b!important;
+}
+.skin-blue .main-header .logo:hover,.skin-blue .main-header .navbar .sidebar-toggle:hover{
+    background-color: #056534!important;
+}
+
+.content-wrapper {
+    background-image: url(/img/bg_diagonal_lines2.png);
+}
