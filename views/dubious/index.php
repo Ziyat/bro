@@ -37,7 +37,7 @@ $gridColumns = [
         'attribute' => 'date_msg',
         'value' => function ($model) {
             $date = explode('-',$model->date_msg);
-            if(is_array($date))
+            if(!empty($date[2]))
             {
                 $arr = $date[2] . '-' . $date[0] . '-' . $date[1];
                 return Date('d.m.Y', strtotime($arr));
