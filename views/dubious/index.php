@@ -37,8 +37,13 @@ $gridColumns = [
         'attribute' => 'date_msg',
         'value' => function ($model) {
             $date = explode('-',$model->date_msg);
-            $arr = $date[2] . '-' . $date[0] . '-' . $date[1];
-            return Date('d.m.Y', strtotime($arr));
+            if(is_array($date))
+            {
+                $arr = $date[2] . '-' . $date[0] . '-' . $date[1];
+                return Date('d.m.Y', strtotime($arr));
+            }
+            return $model->date_msg;
+
         },
         'filter' => \kartik\daterange\DateRangePicker::widget([
             'model' => $searchModel,
@@ -113,7 +118,7 @@ $gridColumns = [
         echo ExportMenu::widget([
             'dataProvider' => $dataProvider,
             'columns' => $gridColumns,
-            exportConfig => [
+            'exportConfig' => [
                 ExportMenu::FORMAT_TEXT => false,
                 ExportMenu::FORMAT_EXCEL => false,
                 ExportMenu::FORMAT_CSV => false,
