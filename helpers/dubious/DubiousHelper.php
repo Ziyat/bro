@@ -131,54 +131,28 @@ class DubiousHelper
 
     public static function dateToTime($format, $date)
     {
-        $newDate = false;
-        try {
-            $date = preg_replace('.', '-', $date);
-        } catch (\Exception $e) {
-            $error = $e;
-        }
-        try {
+        $newDate = [];
 
-            $date = preg_replace('/', '-', $date);
-        } catch (\Exception $e) {
-            $error = $e;
-        }
-        try {
+        $date = trim($date);
+        $format = trim($format);
 
-            $format = preg_replace('.', '-', $format);
-        } catch (\Exception $e) {
-            $error = $e;
-        }
-        try {
+        $date = str_replace([".","/","-"," ",""],'-',$date);
+        $format = str_replace([".","/","-"," ",""],'-',$format);
 
-            $format = preg_replace('/', '-', $format);
-        } catch (\Exception $e) {
-            $error = $e;
-        }
+        $date = explode('-', $date);
+        $format = explode('-', $format);
 
-
-        $date = explode('-', $format);
-
-        foreach (explode('-', $format) as $k => $f) {
-
-            switch ($f) {
-                case 'd':
-                    $newDate['day'] = $date[$k];
-                    break;
-                case 'm':
-                    $newDate['month'] = $date[$k];
-                    break;
-
-                case 'y':
-                    $newDate['year'] = $date[$k];
-                    break;
-                case 'Y':
-                    $newDate['year'] = $date[$k];
-                    break;
+        foreach ($format as $k => $f)
+        {
+            if($f == 'm' || $f == 'M'){
+                $newDate['month'] = $date[$k];
+            }elseif($f == 'd' || $f == 'D'){
+                $newDate['day'] = $date[$k];
+            }elseif($f == 'y' || $f == 'Y'){
+                $newDate['year'] = $date[$k];
             }
         }
-
-        return $newDate ? strtotime($newDate['year'] . '-' . $newDate['month'] . '-' . $newDate['day']) : null;
+        return strtotime($newDate['year'] . '-' . $newDate['month'] . '-' . $newDate['day']);
 
 
     }
