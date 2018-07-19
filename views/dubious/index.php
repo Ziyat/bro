@@ -102,7 +102,6 @@ $gridColumns = [
     ]);?>
 <hr>
 <div class="box">
-    <div class="box-body">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
 //            'filterModel' => $searchModel,
@@ -121,5 +120,4 @@ $gridColumns = [
         ]);
 
         ?>
-    </div>
 </div>
