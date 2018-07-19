@@ -102,7 +102,7 @@ $gridColumns = [
     ]);?>
 <hr>
 <div class="box">
-    <div class="box-body" style="overflow: scroll;">
+    <div class="box-body">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
 //            'filterModel' => $searchModel,
