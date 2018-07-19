@@ -53,18 +53,14 @@ class ExportService
             }
             $newArray['data'] = array_values($newArray['data']);
 
-
             $titles = array_merge(['Наименование филиала банка', 'Кол-во выяв-ных сомнительных операций в филиалах банка'], array_keys($newArray['criterions']));
             unset($newArray['criterions']);
-            $data = $newArray['data'];
-
-//            VarDumper::dump($data,10,true);die;
 
             $file = \Yii::createObject([
                 'class' => 'codemix\excelexport\ExcelFile',
                 'sheets' => [
                     'Report for Central bank' => [
-                        'data' => $data,
+                        'data' => $newArray['data'],
                         'titles' => $titles,
                         'styles' => [
                             'A1:AO1' => [
@@ -91,37 +87,4 @@ class ExportService
         return ['start' => $start, 'end' => $end] ?: false;
     }
 
-
-    private function sortByGroup(array $dubious)
-    {
-        $groupSort = [];
-        foreach ($dubious as $item) {
-            $usersId[] = $item->created_by;
-        }
-
-        $users = User::find()->with('assignments')->where(['users.id' => $usersId])->all();
-
-        foreach ($users as $k => $user) {
-            foreach ($dubious as $item) {
-
-                if ($item->created_by == $user->id && count($user->assignments) > 0) {
-                    $criterion = explode('.', $item->criterion)[1];
-                    $currentKey = $groupSort[$k]["по $criterion критерию п.48, ПВК - 2886"];
-                    if (isset($currentKey)) {
-                        $groupSort[$k]["по $criterion критерию п.48, ПВК - 2886"]++;
-                    } else {
-                        $groupSort[$k]["по $criterion критерию п.48, ПВК - 2886"] = 1;
-                        $groupSort[$k]['group'] = [$user->assignments[0]->name];
-                        $groupSort[$k]['user'] = [$user->name];
-                    }
-                }
-
-            }
-
-
-        }
-
-
-        return $groupSort;
-    }
 }
