@@ -8,6 +8,7 @@
 namespace app\assets;
 
 use yii\web\AssetBundle;
+use dmstr\web\AdminLteAsset;
 
 /**
  * Main application asset bundle.
@@ -15,14 +16,18 @@ use yii\web\AssetBundle;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AppAsset extends AssetBundle
+class AppAsset extends AdminLteAsset
 {
-    public $basePath = '@webroot';
-    public $baseUrl = '@web';
+    public $sourcePath = '@vendor/almasaeed2010/adminlte';
+//    public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'bower_components/morris.js/morris.css',
+        'bower_components/Ionicons/css/ionicons.min.css',
     ];
     public $js = [
+        'bower_components/raphael/raphael.min.js',
+        'bower_components/morris.js/morris.min.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

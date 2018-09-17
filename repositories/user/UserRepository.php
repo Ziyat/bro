@@ -7,6 +7,7 @@ use app\entities\user\User;
 use app\entities\user\UsersGroup;
 use app\repositories\NotFoundException;
 use yii\db\StaleObjectException;
+use yii\helpers\VarDumper;
 
 class UserRepository
 {
@@ -17,6 +18,14 @@ class UserRepository
         }
         return $user;
     }
+    public function getByIds($ids): array
+    {
+        if (!$users = User::findAll($ids)) {
+            throw new NotFoundException('Users is not found.');
+        }
+        return $users;
+    }
+
     public function getGroup($id): UsersGroup
     {
         if (!$group = UsersGroup::findOne($id)) {
@@ -27,6 +36,7 @@ class UserRepository
 
     public function save(User $user)
     {
+
         if (!$user->save()) {
             throw new \RuntimeException('Saving error.');
         }

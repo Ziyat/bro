@@ -16,6 +16,7 @@ class m180409_105335_create_users_group_table extends Migration
         $this->createTable('{{%users_group}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull(),
+            'parent_id' => $this->integer()->defaultValue(0),
         ],$tableOptions);
     }
 
@@ -24,6 +25,6 @@ class m180409_105335_create_users_group_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('users_group');
+        $this->dropTable('{{%users_group}}');
     }
 }

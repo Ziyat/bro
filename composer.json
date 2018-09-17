@@ -19,7 +19,7 @@
   },
   "minimum-stability": "stable",
   "require": {
-    "php": ">=5.4.0",
+    "php": ">=7.0.0",
     "yiisoft/yii2": "~2.0.14",
     "yiisoft/yii2-bootstrap": "~2.0.0",
     "yiisoft/yii2-swiftmailer": "~2.0.0",
@@ -33,7 +33,8 @@
     "la-haute-societe/yii2-save-relations-behavior": "^1.2",
     "elisdn/yii2-composite-form": "@dev",
     "kartik-v/yii2-export": "@dev",
-    "codemix/yii2-excelexport": "^2.7"
+    "codemix/yii2-excelexport": "^2.7",
+    "kartik-v/yii2-number": "*"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.0.0",

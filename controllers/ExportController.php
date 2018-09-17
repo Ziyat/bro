@@ -3,13 +3,12 @@
 namespace app\controllers;
 
 
-use app\services\export\ExportService;
-use app\forms\export\CentralBankForm;
+use app\entities\Export\CentralBankSearch;
 use app\forms\LogForm;
+use app\services\export\ExportService;
 use app\services\LogService;
-use yii\helpers\VarDumper;
-use \yii\web\Controller;
 use Yii;
+use yii\web\Controller;
 
 
 class ExportController extends Controller
@@ -24,24 +23,19 @@ class ExportController extends Controller
         $this->logService = $logService;
     }
 
-    public function actionIndex()
+    /**
+     * @return string
+     * @throws \Exception
+     */
+
+    public function actionCentralBank()
     {
-
-        $form = new CentralBankForm();
-
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try
-            {
-                $this->service->centralBankCreateFile($form);
-            }catch (\Exception $e){
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-
-
+        $searchModel = new CentralBankSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 //        $this->logger();
         return $this->render('index', [
-            'form' => $form
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider
         ]);
     }
 

@@ -19,7 +19,7 @@ Class Correspondent
     public $account_cor;
     public $name_cor;
 
-    public function __construct($mfo_cor, $inn_cor, $account_cor, $name_cor)
+    public function __construct($mfo_cor=null, $inn_cor=null, $account_cor=null, $name_cor=null)
     {
         $this->mfo_cor = $mfo_cor;
         $this->inn_cor = $inn_cor;

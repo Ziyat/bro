@@ -21,7 +21,9 @@ composer config --global github-oauth.github.com ${github_token}
 echo "Done!"
 
 info "Install project dependencies"
+
 cd /app
+
 composer --no-progress --prefer-dist install
 
 info "Create bash-alias 'app' for vagrant user"

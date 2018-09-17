@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 use app\helpers\user\UserHelper;
+use app\entities\user\User;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\entities\user\UserSearch */
@@ -20,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="box-body">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
+//                'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     [
@@ -41,8 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'Группы',
-                        'value' => function ($model) {
-                            return UserHelper::getLinkAssignments($model->assignments,'users-group');
+                        'value' => function (User $model) {
+                            return UserHelper::getLinkAssignments($model->groups,'users-group');
                         },
                         'format' => 'raw'
                     ],
@@ -56,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return Html::a(
                                         Html::tag('i',
                                         '',
-                                        ['class' => 'fa fa-eye fa-2x']),
+                                        ['class' => 'fa fa-sign-in fa-2x']),
                                         ['imitation','user_id' => $model->id]);
                             },
                             'format' => 'raw'

@@ -11,6 +11,7 @@ use app\entities\user\User;
 use app\entities\user\UsersGroup;
 use app\repositories\dubious\DubiousRepository;
 use app\forms\export\CentralBankForm;
+use app\repositories\user\UserRepository;
 use moonland\phpexcel\Excel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
@@ -18,73 +19,35 @@ use yii\helpers\VarDumper;
 class ExportService
 {
     private $dubious;
-    private $usersGroup;
+    private $users;
 
-    public function __construct(DubiousRepository $dubious, UsersGroup $usersGroup)
+    public function __construct(DubiousRepository $dubious, UserRepository $users)
     {
         $this->dubious = $dubious;
-        $this->usersGroup = $usersGroup;
+        $this->users = $users;
     }
 
-    public function centralBankCreateFile(CentralBankForm $form)
+    public function centralBankReport(CentralBankForm $form)
     {
-        if ($request = $this->prepareRequest($form->date)) {
-            $dubious = $this->dubious->findByDateDoc($request);
+        $criterion = $this->dubious
+            ->findCriterionByDateDocRange(
+                $form->startDate,
+                $form->endDate
+            );
+        $userIds = $this->dubious
+            ->findUserIdsByDateDocRange(
+                $form->startDate,
+                $form->endDate
+            );
 
-            $criterions = ArrayHelper::getColumn($dubious, 'criterion');
-            $users = ArrayHelper::getColumn($dubious, 'created_by');
-            $newArray = [];
-            foreach ($criterions as $k => $criterion) {
-                if (count($newArray) > 0) {
-                    $newArray['data'][$users[$k]][0] = $users[$k];
-                    $newArray['data'][$users[$k]][1]++;
-                    $newArray['data'][$users[$k]][$criterion]++;
-                    $newArray['criterions'][$criterion] = $criterion;
-                } else {
-                    $newArray['data'][$users[$k]][0] = $users[$k];
-                    $newArray['data'][$users[$k]][1] = 1;
-                    $newArray['data'][$users[$k]][$criterion] = 1;
-                    $newArray['criterions'][$criterion] = $criterion;
-                }
-            }
+        $users = $this->users->getByIds($userIds);
 
-            foreach ($newArray['data'] as $k => $item) {
-                $newArray['data'][$k] = array_values($newArray['data'][$k]);
-            }
-            $newArray['data'] = array_values($newArray['data']);
-
-            $titles = array_merge(['Наименование филиала банка', 'Кол-во выяв-ных сомнительных операций в филиалах банка'], array_keys($newArray['criterions']));
-            unset($newArray['criterions']);
-
-            $file = \Yii::createObject([
-                'class' => 'codemix\excelexport\ExcelFile',
-                'sheets' => [
-                    'Report for Central bank' => [
-                        'data' => $newArray['data'],
-                        'titles' => $titles,
-                        'styles' => [
-                            'A1:AO1' => [
-                                'alignment' => [
-                                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                                    'vertical' => \PHPExcel_Style_Alignment::VERTICAL_CENTER,
-                                    'rotation' => 90,
-                                ],
-                            ],
-                        ]
-                    ]
-                ]
-            ]);
-            return $file->send('demo.xlsx');
-
-
+        foreach ($users as $user){
+            /**
+             * @var User $user
+             */
+            $user->groups;
         }
+        return true;
     }
-
-    private function prepareRequest($date)
-    {
-        $start = strtotime('first day of this month', strtotime($date));
-        $end = strtotime('last day of this month', $start);
-        return ['start' => $start, 'end' => $end] ?: false;
-    }
-
 }

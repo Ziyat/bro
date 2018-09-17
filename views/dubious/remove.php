@@ -17,11 +17,17 @@ use app\entities\user\UsersAssignment;
             <table class="table table-striped table-bordered">
                 <thead>
                 <tr>
-                    <th>Отметить</th>
-                    <th>МФО клиента</th>
-                    <th>Наименование клиента</th>
-                    <th>Добавлено</th>
-                    <th>Добавил</th>
+                    <th>
+                        <div class="checkbox">
+                            <label for="allCheck">
+                                <input type="checkbox" id="allCheck"> <b>Отметить</b>
+                            </label>
+                        </div>
+                    </th>
+                    <th><div class="checkbox">МФО клиента</div></th>
+                    <th><div class="checkbox">Наименование клиента</div></th>
+                    <th><div class="checkbox">Добавлено</div></th>
+                    <th><div class="checkbox">Добавил</div></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,9 +45,21 @@ use app\entities\user\UsersAssignment;
         </div>
     </div>
     <div class="form-group">
-        <?= Html::submitButton('Удалить', [
+        <?= Html::submitButton(Html::tag('i','',['class' => 'fa fa-trash']).' Удалить', [
             'class' => 'btn btn-flat btn-danger',
             'data-confirm' => 'Вы уверены, что хотите удалить эти элементы?'
         ]) ?>
     </div>
 <?php ActiveForm::end(); ?>
+
+<?php
+
+$script = <<<JS
+$("document").ready(function(){
+    $('#allCheck').on('change', function(){
+        $('input:checkbox').not(this).prop('checked', this.checked);
+    });
+});
+JS;
+
+$this->registerJs($script);

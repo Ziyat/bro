@@ -4,19 +4,31 @@ namespace app\services\user;
 
 
 use app\entities\user\User;
-use app\entities\user\UsersGroup;
 use app\forms\user\UserForm;
-use app\forms\user\UsersGroupForm;
 use app\repositories\user\UserRepository;
-use yii\helpers\VarDumper;
+use app\services\TransactionManager;
 
+
+/**
+ * Created by Madetec-Solution.
+ * Developer: Mirkhanov Z.S.
+ * Class UserService
+ * @package app\services\user
+ * @property UserRepository $users
+ * @property TransactionManager $transaction
+ */
 class UserService
 {
-    private $repository;
+    private $users;
+    private $transaction;
 
-    public function __construct(UserRepository $repository)
+    public function __construct(
+        UserRepository $users,
+        TransactionManager $transactionManager
+    )
     {
-        $this->repository = $repository;
+        $this->users = $users;
+        $this->transaction = $transactionManager;
     }
 
     /**
@@ -27,8 +39,19 @@ class UserService
     public function create(UserForm $form)
     {
         $user = User::create($form->name, $form->username,$form->password,$form->status);
+        try {
+            $this->transaction->wrap(function () use ($user, $form) {
+                if (!empty($form->groups)) {
+                    foreach ($form->groups as $groupId) {
+                        $user->setGroup($groupId);
+                    }
+                }
+                $this->users->save($user);
+            });
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
 
-        $this->repository->save($user);
         return $user;
     }
 
@@ -36,56 +59,46 @@ class UserService
      * @param UserForm $form
      * @return User
      */
-    public function edit($id,UserForm $form)
+    public function edit($id, UserForm $form)
     {
-        $user = $this->repository->get($id);
-        $user->edit($form->name, $form->username,$form->password,$form->status);
+        $user = $this->users->get($id);
 
-        $this->repository->save($user);
+        try {
+            $this->transaction->wrap(function () use ($user, $form) {
+                $user->revokeGroups();
+                $this->users->save($user);
+                $user->edit($form->name, $form->username, $form->password, $form->status);
+                if (!empty($form->groups)) {
+                    foreach ($form->groups as $groupId) {
+                        $user->setGroup($groupId);
+                    }
+                }
+                $this->users->save($user);
+            });
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage());
+        }
+
         return $user;
-    }
-
-    /**
-     * @param UsersGroupForm $form
-     * @return UsersGroup
-     */
-    public function createGroup(UsersGroupForm $form)
-    {
-        $group = UsersGroup::create($form->name,$form->users);
-        $this->repository->saveGroup($group);
-        return $group;
-    }
-
-    /**
-     * @param UsersGroupForm $form
-     * @return UsersGroup
-     */
-    public function editGroup($id, UsersGroupForm $form)
-    {
-        $group = $this->repository->getGroup($id);
-        $group->edit($form->name, $form->users);
-
-        $this->repository->saveGroup($group);
-        return $group;
     }
 
     public function activate($id)
     {
-        $user = $this->repository->get($id);
+        $user = $this->users->get($id);
         $user->activate();
-        $this->repository->save($user);
+        $this->users->save($user);
     }
 
     public function deactivate($id)
     {
-        $user = $this->repository->get($id);
+        $user = $this->users->get($id);
         $user->deactivate();
-        $this->repository->save($user);
+        $this->users->save($user);
     }
 
     public function remove($id)
     {
-        $user = $this->repository->get($id);
-        $this->repository->remove($user);
+        $user = $this->users->get($id);
+        $this->users->remove($user);
     }
 }

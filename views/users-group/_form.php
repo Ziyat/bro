@@ -1,21 +1,31 @@
 <?php
 
+use app\helpers\user\UserHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\helpers\user\UserHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\forms\user\UsersGroupForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <?php $form = ActiveForm::begin(); ?>
+<div class="row">
 <div class="col-md-4">
     <div class="box">
         <div class="box-header">
             <div class="box-title">Основное</div>
         </div>
         <div class="box-body">
-            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'name')
+                ->textInput(['maxlength' => true])
+                ->label('Наименование')
+            ?>
+            <?= $form->field($model, 'parentId')
+                ->dropDownList($model->parentList(), ['prompt' => 'Выберите...'])
+                ->label('Родитель')
+            ?>
+
+
             <div style="height: 200px; overflow-y: scroll; margin-bottom: 20px;">
                 <?= $form->field($model, 'users')
                     ->label(false)
@@ -34,7 +44,6 @@ use app\helpers\user\UserHelper;
     </div>
 
 </div>
-
-
+</div>
 <?php ActiveForm::end(); ?>
 

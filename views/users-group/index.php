@@ -1,9 +1,9 @@
 <?php
 
-use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\widgets\ActiveForm;
+use app\entities\user\UsersGroup;
 use app\helpers\user\UserHelper;
+use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\entities\user\UsersGroupSearch */
@@ -24,11 +24,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-                    'name',
+                    [
+                        'attribute' => 'name',
+                        'value' => function (UsersGroup $model) {
+                            return $model->parent ? '–– ' . $model->name : $model->name;
+                        }
+                    ],
+                    [
+                        'attribute' => 'parent_id',
+                        'label' => 'Родитель',
+                        'value' => function (UsersGroup $model) {
+                            return $model->parent ?  $model->parent->name : null;
+                        }
+                    ],
                     [
                         'attribute' => 'Пользователи',
-                        'value' => function ($model) {
-                            return UserHelper::getLinkAssignments($model->assignments, 'users');
+                        'value' => function (UsersGroup $model) {
+                            return UserHelper::getLinkAssignments($model->users, 'users');
                         },
                         'format' => 'raw'
                     ],

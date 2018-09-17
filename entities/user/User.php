@@ -1,16 +1,15 @@
 <?php
 namespace app\entities\user;
 
-use app\forms\user\UserForm;
+use app\entities\dubious\Dubious;
 use app\helpers\user\UserHelper;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\base\NotSupportedException;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\Inflector;
-use yii\helpers\VarDumper;
 use yii\web\IdentityInterface;
 
 /**
@@ -27,7 +26,10 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
- * @property UsersAssignment[] $assignment
+ *
+ * @property UsersAssignment[] $groupAssignments
+ * @property UsersGroup[] $groups
+ * @property Dubious[] $dubious
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -53,6 +55,23 @@ class User extends ActiveRecord implements IdentityInterface
         $this->username = Inflector::slug($username);
         $this->setPassword($password);
         $this->status = $status;
+    }
+
+    public function setGroup($group_id)
+    {
+        $assignments = $this->groupAssignments;
+        foreach ($assignments as $assignment) {
+            if ($assignment->isForGroup($group_id)) {
+                return;
+            }
+        }
+        $assignments[] = UsersAssignment::create(null,$group_id);
+        $this->groupAssignments = $assignments;
+    }
+
+    public function revokeGroups(): void
+    {
+        $this->groupAssignments = [];
     }
 
     public function attributeLabels()
@@ -83,28 +102,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->status == self::STATUS_INACTIVE;
     }
-
-
-
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%users}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::class
-        ];
-    }
-
-
 
     /**
      * @inheritdoc
@@ -236,13 +233,39 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAssignments()
+    // group
+
+    public function getGroupAssignments()
     {
-        return $this->hasMany(UsersGroup::className(), ['id' => 'group_id'])
-            ->viaTable('users_assignment',['user_id' => 'id']);
+        return $this->hasMany(UsersAssignment::class, ['user_id' => 'id']);
+    }
+
+    public function getGroups()
+    {
+        return $this->hasMany(UsersGroup::class, ['id' => 'group_id'])->via('groupAssignments');
+    }
+
+
+    public function getDubious(): ActiveQuery
+    {
+        return $this->hasMany(Dubious::class,['created_by' => 'id']);
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => ['groupAssignments'],
+            ],
+        ];
+    }
+
+
+    public static function tableName()
+    {
+        return '{{%users}}';
     }
 
 

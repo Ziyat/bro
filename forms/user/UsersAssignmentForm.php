@@ -5,8 +5,8 @@ namespace app\forms\user;
 use app\entities\user\User;
 use app\entities\user\UsersAssignment;
 use app\entities\user\UsersGroup;
-use Yii;
 use yii\base\Model;
+
 /**
  * UsersAssignmentForm
  *

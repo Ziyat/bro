@@ -4,7 +4,7 @@ return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=127.0.0.1;dbname=bank',
     'username' => 'root',
-    'password' => '123',
+    'password' => '',
 //    'password' => '1z2x3c4v5b@#',
     'charset' => 'utf8',
 

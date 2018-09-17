@@ -1,10 +1,16 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 use app\entities\dubious\Client;
 use app\entities\dubious\Correspondent;
 use app\entities\dubious\Dubious;
+use app\entities\dubious\Params;
+use kartik\daterange\DateRangePicker;
+use kartik\number\NumberControl;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
+use app\entities\user\User;
+use app\helpers\dubious\DubiousHelper;
 
 
 /* @var $this yii\web\View */
@@ -16,120 +22,171 @@ use app\entities\dubious\Dubious;
     'action' => ['index'],
     'method' => 'get',
 ]); ?>
-
-<div class="box box-primary">
-    <div class="box-header">
-        <h4>Расширенный поиск</h4>
-        <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-            </button>
-        </div>
+<div class="row">
+    <div class="col-md-2">
+        <h5><b>Дата</b></h5>
     </div>
-    <div class="box-body">
-        <div class="col-md-2">
-            <h5><b>Дата</b></h5>
-        </div>
-        <div class="col-md-5 form-group">
-            <?= \kartik\date\DatePicker::widget([
-                'name' => 'DubiousSearch[date_msg]',
-                'options' => ['placeholder' => 'Выберите дату сообщения'],
-                'pluginOptions' => [
-                    'format' => 'mm-dd-yy',
-                    'todayHighlight' => true
+    <div class="col-md-5 form-group">
+        <?= DateRangePicker::widget([
+            'model' => $model,
+            'attribute' => 'dateDocRange',
+            'convertFormat' => true,
+            'startAttribute' => 'dateDocStart',
+            'endAttribute' => 'dateDocEnd',
+            'options' => [
+                'readonly' => 'readonly',
+                'placeholder' => 'Дата проводки',
+                'class' => 'form-control',
+            ],
+            'pluginOptions' => [
+                'locale' => [
+                    'format' => 'd-m-Y'
                 ]
-            ]) ?>
-        </div>
-        <div class="col-md-5 form-group">
-            <?= \kartik\date\DatePicker::widget([
-                'name' => 'DubiousSearch[date_doc]',
-                'options' => ['placeholder' => 'Выберите дату проводки'],
-                'pluginOptions' => [
-                    'format' => 'dd.mm.yyyy',
-                    'todayHighlight' => true
+            ]
+        ]); ?>
+    </div>
+    <div class="col-md-5 form-group">
+        <?= DateRangePicker::widget([
+            'model' => $model,
+            'attribute' => 'dateMsgRange',
+            'convertFormat' => true,
+            'startAttribute' => 'dateMsgStart',
+            'endAttribute' => 'dateMsgEnd',
+            'options' => [
+                'readonly' => 'readonly',
+                'placeholder' => 'Дата сообщения',
+                'class' => 'form-control',
+            ],
+            'pluginOptions' => [
+                'locale' => [
+                    'format' => 'd-m-Y'
                 ]
-            ]) ?>
-        </div>
-        <hr>
-        <div class="clearfix"></div>
-        <div class="col-md-2">
-            <h5><b>Клиент</b></h5>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'mfo_cli')
-                ->label(false)
-                ->dropDownList(Client::mfoList(new Dubious()), ['prompt' => 'Выберите МФО']) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'id_cli')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'ID']) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'inn_cli')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'ИНН']) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'account_cli')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'Счет']) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'name_cli')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'Наименование']) ?>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-md-2">
-            <h5><b>Корреспондент</b></h5>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'mfo_cor')
-                ->label(false)
-                ->dropDownList(Correspondent::mfoList(new Dubious()), ['prompt' => 'Выберите МФО']) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'inn_cor')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'ИНН']) ?>
-        </div>
-        <div class="col-md-3">
-            <?= $form->field($model, 'account_cor')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'Счет']) ?>
-        </div>
-        <div class="col-md-3">
-            <?= $form->field($model, 'name_cor')
-                ->label(false)
-                ->textInput(['maxlength' => true,'placeholder' => 'Наименование']) ?>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-md-2">
-            <h5><b>Доп. параметры</b></h5>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'doc_sum')->textInput(['maxlength' => true,'placeholder' => 'Сумма документа'])->label(false) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'pop')->textInput(['maxlength' => true,'placeholder' => 'Назначение платежа'])->label(false) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'ans_per')->textInput(['maxlength' => true,'placeholder' => 'Ответ исполнитель'])->label(false) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'currency')->textInput(['maxlength' => true,'placeholder' => 'Валюта'])->label(false) ?>
-        </div>
-        <div class="col-md-2">
-            <?= $form->field($model, 'criterion')->textInput(['maxlength' => true,'placeholder' => 'Критерий'])->label(false) ?>
+            ]
+        ]); ?>
+    </div>
+    <hr>
+    <div class="clearfix"></div>
+    <div class="col-md-2">
+        <h5><b>Клиент</b></h5>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'mfo_cli')
+            ->label(false)
+            ->dropDownList(Client::mfoList(new Dubious()), ['prompt' => 'МФО']) ?>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'inn_cli')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'ИНН']) ?>
+    </div>
+    <div class="col-md-3">
+        <?= $form->field($model, 'account_cli')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'Счет']) ?>
+    </div>
+    <div class="col-md-3">
+        <?= $form->field($model, 'name_cli')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'Наименование']) ?>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-2">
+        <h5><b>Корреспондент</b></h5>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'mfo_cor')
+            ->label(false)
+            ->dropDownList(Correspondent::mfoList(new Dubious()), ['prompt' => 'МФО']) ?>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'inn_cor')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'ИНН']) ?>
+    </div>
+    <div class="col-md-3">
+        <?= $form->field($model, 'account_cor')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'Счет']) ?>
+    </div>
+    <div class="col-md-3">
+        <?= $form->field($model, 'name_cor')
+            ->label(false)
+            ->textInput(['maxlength' => true, 'placeholder' => 'Наименование']) ?>
+    </div>
+
+    <div class="col-md-2">
+        <h5><b>Параметры</b></h5>
+    </div>
+
+    <div class="col-md-3">
+        <?= $form->field($model, 'pop')
+            ->textInput(['maxlength' => true, 'placeholder' => 'Назначение платежа'])
+            ->label(false) ?>
+    </div>
+    <div class="col-md-3">
+        <?= $form->field($model, 'ans_per')
+            ->label(false)
+            ->dropDownList(Params::ansPerList(new Dubious()), ['prompt' => 'Ответ исп.'])
+        ?>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'currency')
+            ->label(false)
+            ->dropDownList(Params::currencyList(new Dubious()), ['prompt' => 'Валюта'])
+        ?>
+    </div>
+    <div class="col-md-2">
+        <?= $form->field($model, 'criterion')
+            ->label(false)
+            ->dropDownList(Params::criterionList(new Dubious()), ['prompt' => 'Критерий'])
+        ?>
+    </div>
+
+    <div class="col-md-2">
+        <h5><b>Диапазон</b></h5>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <?= NumberControl::widget([
+                'model' => $model,
+                'displayOptions' => [
+                    'placeholder' => 'Сумма документа от',
+                ],
+                'attribute' => 'sumStart',
+                'maskedInputOptions' => [
+                    'groupSeparator' => ' ',
+                ],
+            ]);
+            ?>
         </div>
     </div>
-    <div class="box-footer clearfix">
-            <?= Html::submitButton('Поиск', ['class' => 'btn btn-block btn-primary btn-flat']) ?>
-            <?= Html::a('Очистить','/dubious', ['class' => 'btn btn-block btn-default btn-flat']) ?>
-
-
+    <div class="col-md-3">
+        <div class="form-group">
+            <?= NumberControl::widget([
+                'model' => $model,
+                'displayOptions' => [
+                    'placeholder' => 'Сумма документа до',
+                ],
+                'attribute' => 'sumEnd',
+                'maskedInputOptions' => [
+                    'groupSeparator' => ' ',
+                ],
+            ]);
+            ?>
+        </div>
     </div>
+    <div class="col-md-4">
+        <?= $form->field($model, 'created_by')
+            ->label(false)
+            ->dropDownList(DubiousHelper::getUsersInGroup(Yii::$app->user->identity), ['prompt' => 'Все операторы'])
+        ?>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+        <?= Html::submitButton('Поиск', ['class' => 'btn btn-block btn-primary btn-flat']) ?>
+        <?= Html::a('Очистить', '/dubious', ['class' => 'btn btn-block btn-default btn-flat']) ?>
+    </div>
+
 </div>
-
-
 <?php ActiveForm::end(); ?>

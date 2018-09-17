@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use app\helpers\user\UserHelper;
+use app\entities\user\User;
 
 /* @var $this yii\web\View */
 /* @var $model app\entities\user\User */
@@ -46,8 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'Группы',
-                        'value' => function ($model) {
-                            return UserHelper::getLinkAssignments($model->assignments,'users-group');
+                        'value' => function (User $model) {
+                            return UserHelper::getLinkAssignments($model->groups,'users-group');
                         },
                         'format' => 'raw'
                     ],

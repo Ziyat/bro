@@ -1,13 +1,36 @@
-.skin-blue .main-header .navbar,.skin-blue .main-header li.user-header{
-    background-color: #519274!important;
+.skin-blue .main-header .navbar, .skin-blue .main-header li.user-header {
+    background-color: #519274 !important;
 }
-.skin-blue .main-header .logo{
-    background-color: #22774b!important;
+
+.skin-blue .main-header .logo {
+    background-color: #22774b !important;
 }
-.skin-blue .main-header .logo:hover,.skin-blue .main-header .navbar .sidebar-toggle:hover{
-    background-color: #056534!important;
+
+.skin-blue .main-header .logo:hover, .skin-blue .main-header .navbar .sidebar-toggle:hover {
+    background-color: #056534 !important;
 }
 
 .content-wrapper {
     background-image: url(/img/bg_diagonal_lines2.png);
+}
+
+thead > tr > th a {
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    padding: 5px; /* Поля вокруг текста */
+    text-overflow: ellipsis; /* Добавляем многоточие */
+}
+
+.summary {
+    text-align: left;
+    font-size: 15px;
+    margin: 10px;
+    text-decoration: underline;
+}
+
+.alert-success{
+    background-color: #509274 !important;
+}
+.label-success{
+    background-color: #21774b !important;
 }

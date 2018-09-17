@@ -16,12 +16,14 @@ use yii\helpers\ArrayHelper;
  *
  * @property string $id
  * @property string $name
- * @property string $users
+ * @property string $parentId
+ * @property array $users
  */
 class UsersGroupForm extends Model
 {
     public $id;
     public $name;
+    public $parentId;
     public $users;
     private $_group;
 
@@ -29,27 +31,36 @@ class UsersGroupForm extends Model
     {
         if($group){
             $this->name = $group->name;
-            $this->users = ArrayHelper::getColumn(UsersAssignment::findAll(['group_id' => $group->id]),'user_id');
+            $this->parentId = $group->parent_id;
+            $this->users = $group->users;
             $this->_group = $group;
         }
         parent::__construct($config);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
-            ['users', 'each', 'rule' => ['required']],
-            //['users', 'each', 'rule' => ['exist', 'targetClass' => UsersAssignment::className(), 'targetAttribute' => 'user_id']],
+            [['parentId'], 'integer'],
+            ['parentId', 'exist', 'targetClass' => UsersGroup::class, 'targetAttribute' => 'id'],
+            ['users', 'each', 'rule' => ['exist', 'targetClass' => User::class, 'targetAttribute' => 'id']],
         ];
     }
 
     public function attributeLabels()
     {
-        return UserHelper::attributeLabels();
+        return [
+            'name' => 'Наименование',
+            'parentId' => 'Родитель'
+
+        ];
+    }
+
+
+    public function parentList()
+    {
+        return ArrayHelper::map(UsersGroup::find()->all(),'id','name');
     }
 }

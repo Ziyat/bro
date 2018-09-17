@@ -32,6 +32,7 @@ use Yii;
  * @property string $ans_per
  * @property string $currency
  * @property string $criterion
+ * @property string $file
  * @property int $created_at
  * @property int $created_by
  * @property int $updated_at
@@ -41,8 +42,15 @@ class Dubious extends ActiveRecord
 {
     public $start_date;
     public $end_date;
+    public $count;
 
-    public static function create(Client $client, Correspondent $correspondent, Date $date, Params $params): Dubious
+    public static function create(
+        Client $client,
+        Correspondent $correspondent,
+        Date $date,
+        Params $params,
+        $filename = null
+    ): Dubious
     {
         $dubious = new static();
 
@@ -65,6 +73,8 @@ class Dubious extends ActiveRecord
         $dubious->ans_per = $params->ans_per;
         $dubious->currency = $params->currency;
         $dubious->criterion = $params->criterion;
+
+        $dubious->file = $filename;
 
         return $dubious;
     }
@@ -108,8 +118,9 @@ class Dubious extends ActiveRecord
         ];
     }
 
-    public function getUser(){
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     /**

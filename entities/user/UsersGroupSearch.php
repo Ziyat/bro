@@ -41,7 +41,7 @@ class UsersGroupSearch extends UsersGroup
      */
     public function search($params)
     {
-        $query = UsersGroup::find();
+        $query = UsersGroup::find()->orderBy('parent_id');
 
         // add conditions that should always apply here
 

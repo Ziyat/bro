@@ -21,7 +21,7 @@ Class Client
     public $account_cli;
     public $name_cli;
 
-    public function __construct($id_cli, $mfo_cli, $inn_cli, $account_cli, $name_cli)
+    public function __construct($id_cli = null, $mfo_cli= null, $inn_cli= null, $account_cli= null, $name_cli= null)
     {
         $this->id_cli = $id_cli;
         $this->mfo_cli = $mfo_cli;

@@ -2,7 +2,7 @@
 
 namespace app\entities\user;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "users_assignment".
@@ -13,11 +13,11 @@ use Yii;
  * @property UsersGroup $group
  * @property User $user
  */
-class UsersAssignment extends \yii\db\ActiveRecord
+class UsersAssignment extends ActiveRecord
 {
 
 
-    public static function create($user_id, $group_id)
+    public static function create($user_id = null, $group_id = null)
     {
         $usersAssignment = new static();
         $usersAssignment->user_id = $user_id;
@@ -31,6 +31,15 @@ class UsersAssignment extends \yii\db\ActiveRecord
     }
 
 
+    public function isForUser($userId): bool
+    {
+        return $this->user_id == $userId;
+    }
+
+    public function isForGroup($groupId): bool
+    {
+        return $this->group_id == $groupId;
+    }
 
     /**
      * @inheritdoc
@@ -39,19 +48,21 @@ class UsersAssignment extends \yii\db\ActiveRecord
     {
         return '{{%users_assignment}}';
     }
+
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getGroup()
     {
-        return $this->hasOne(UsersGroup::className(), ['id' => 'group_id']);
+        return $this->hasOne(UsersGroup::class, ['id' => 'group_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getUsers()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasMany(User::class, ['id' => 'user_id']);
     }
 }

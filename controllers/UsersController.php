@@ -33,9 +33,11 @@ class UsersController extends Controller
         return [
             'access' => [
                 'class' => 'yii\filters\AccessControl',
+                'except' =>['imitation'],
                 'rules' => [
                     [
                         'allow' => true,
+
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->identity->is_admin;
                         }
@@ -179,6 +181,12 @@ class UsersController extends Controller
     {
         try{
             $model = $this->findModel($user_id);
+            if(Yii::$app->user->identity->is_admin){
+                Yii::$app->session->set('imitation',Yii::$app->user->id);
+            }else{
+                Yii::$app->session->set('imitation','');
+            }
+
             Yii::$app->user->login($model);
         }catch (NotFoundHttpException $e)
         {
